@@ -3,23 +3,20 @@
 # simple client-server, v1
 
 defmodule Server do
- 
-def start do 
+
+def start do
   IO.puts "-> Server at #{Helper.node_string()}"
-  receive do
-  { :bind, client } -> next(client) 
-  end
+  next()
 end # start
- 
-defp next(client) do
+
+defp next do
   receive do
-    { :circle, radius } -> 
-      send client, { :result, 3.14159 * radius * radius }
-    { :square, side } -> 
-      send client, { :result, side * side }
+    { :circle, client_id, radius } ->
+      send client_id, { :result, 3.14159 * radius * radius }
+    { :square, client_id, side } ->
+      send client_id, { :result, side * side }
   end # receive
-  next(client)
+  next()
 end # next
 
 end # Server
-

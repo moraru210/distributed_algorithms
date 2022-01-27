@@ -4,6 +4,7 @@
 
 START    = ClientServer.start
 MAX_TIME = 10000
+CLIENTS = 5
 
 HOST	:= 127.0.0.1
 
@@ -17,7 +18,7 @@ UNIQUE  := ${SECS}_alex
 NODE_SUFFIX := ${UNIQUE}@${HOST}
 
 ELIXIR  := elixir --no-halt --cookie ${COOKIE} --name
-MIX 	:= -S mix run -e ${START} ${MAX_TIME} ${NODE_SUFFIX}
+MIX 	:= -S mix run -e ${START} ${MAX_TIME} ${NODE_SUFFIX} ${CLIENTS}
 
 # --------------------------------------------------------------------
 
@@ -52,7 +53,11 @@ single: compile
 #    	the foreground
 
 run cluster: compile
-	@ ${ELIXIR} client_${NODE_SUFFIX} ${MIX} cluster_wait &
+	@ ${ELIXIR} client1_${NODE_SUFFIX} ${MIX} cluster_wait &
+	@ ${ELIXIR} client2_${NODE_SUFFIX} ${MIX} cluster_wait &
+	@ ${ELIXIR} client3_${NODE_SUFFIX} ${MIX} cluster_wait &
+	@ ${ELIXIR} client4_${NODE_SUFFIX} ${MIX} cluster_wait &
+	@ ${ELIXIR} client5_${NODE_SUFFIX} ${MIX} cluster_wait &
 	@ ${ELIXIR} server_${NODE_SUFFIX} ${MIX} cluster_wait & 
 	@sleep 2
 	@ ${ELIXIR} clientserver_${NODE_SUFFIX} ${MIX} cluster_start

@@ -4,27 +4,29 @@
 
 defmodule ClientServer do
 
-def start do 
+def start do
   config = Helper.node_init()
-  start(config, config.start_function) 
+  start(config, config.start_function)
 end # start
 
 defp start(config, :single_start) do
   IO.puts "-> ClientServer at #{Helper.node_string()}"
   server = Node.spawn(:'clientserver_#{config.node_suffix}', Server, :start, [])
-  client = Node.spawn(:'clientserver_#{config.node_suffix}', Client, :start, [])
-  send server, { :bind, client }
-  send client, { :bind, server }
+  Process.sleep(5)
+
+  for i <- 1..config.clients do
+    _client = Node.spawn(:'clientserver_#{config.node_suffix}', Client, :start, [server, i])
+  end
 end # start
 
 defp start(_,      :cluster_wait), do: :skip
 defp start(config, :cluster_start) do
   IO.puts "-> ClientServer at #{Helper.node_string()}"
   server = Node.spawn(:'server_#{config.node_suffix}', Server, :start, [])
-  client = Node.spawn(:'client_#{config.node_suffix}', Client, :start, [])
-  send server, { :bind, client }
-  send client, { :bind, server }
+  Process.sleep(5)
+  for i <- 1..config.clients do
+    _client = Node.spawn(:'client#{i}_#{config.node_suffix}', Client, :start, [server, i])
+  end
 end # start
 
 end # ClientServer
-

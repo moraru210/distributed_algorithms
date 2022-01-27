@@ -1,11 +1,11 @@
 
-# distributed algorithms, n.dulay, 10 jan 22
+# distributed algorithms, n.dulay, 10 jan 22 
 # various helper functions
 
 defmodule Helper do
 
-def lookup(name) do
-  addresses = :inet_res.lookup(name,:in,:a)
+def lookup(name) do 
+  addresses = :inet_res.lookup(name,:in,:a) 
   {a, b, c, d} = hd(addresses) 		# get octets for 1st ipv4 address
   :"#{a}.#{b}.#{c}.#{d}"
 end # lookup
@@ -23,7 +23,6 @@ def pid_string(pid), do: inspect pid 		# to print a process id
 def self_string(),   do: inspect self()
 
 def random(n),       do: Enum.random 1..n
-def sqrt(x),         do: :math.sqrt x
 
 # --------------------------------------------------------------------------
 
@@ -34,19 +33,20 @@ end # node_exit
 def exit_after(duration) do
   Process.sleep(duration)
   IO.puts "Exiting #{node()}"
-  node_exit()
+  node_exit()	
 end # exit_after
 
 def node_init do  # get node arguments and spawn a process to exit node after max_time
-  config =
+  config = 
     Map.new
     |> Map.put(:max_time, 	String.to_integer(Enum.at(System.argv, 0)))
     |> Map.put(:node_suffix,    Enum.at(System.argv, 1))
+    |> Map.put(:n_peers,        String.to_integer(Enum.at(System.argv, 2)))
     |> Map.put(:start_function, :'#{Enum.at(System.argv, 3)}')
-    |> Map.put(:clients, String.to_integer(Enum.at(System.argv, 2)))
 
   spawn(Helper, :exit_after, [config.max_time])
   config
 end # node_init
 
 end # Helper
+
